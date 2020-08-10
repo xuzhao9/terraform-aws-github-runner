@@ -33,11 +33,15 @@ interface ReleaseAsset {
 
 async function getLinuxReleaseAsset(runnerArch = 'x64'): Promise<ReleaseAsset | undefined> {
   const githubClient = new Octokit();
-  const assets = await githubClient.repos.getLatestRelease({
+  const assetsList = await githubClient.repos.listReleases({
     owner: 'actions',
     repo: 'runner',
   });
-  const linuxAssets = assets.data.assets?.filter((a) => a.name?.includes(`actions-runner-linux-${runnerArch}-`));
+  if (assetsList.data?.length === 0) {
+    return undefined;
+  }
+  const assets = assetsList.data[0];
+  const linuxAssets = assets.assets?.filter((a) => a.name?.includes(`actions-runner-linux-${runnerArch}-`));
 
   return linuxAssets?.length === 1
     ? { name: linuxAssets[0].name, downloadUrl: linuxAssets[0].browser_download_url }

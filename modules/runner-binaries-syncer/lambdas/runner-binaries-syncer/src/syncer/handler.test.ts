@@ -6,7 +6,7 @@ import latestReleasesNoArm64 from '../../test/resources/github-latest-releases-n
 
 const mockOctokit = {
   repos: {
-    getLatestRelease: jest.fn(),
+    listReleases: jest.fn(),
   },
 };
 jest.mock('@octokit/rest', () => ({
@@ -32,8 +32,8 @@ describe('Synchronize action distribution.', () => {
     process.env.S3_BUCKET_NAME = bucketName;
     process.env.S3_OBJECT_KEY = bucketObjectKey;
 
-    mockOctokit.repos.getLatestRelease.mockImplementation(() => ({
-      data: latestReleases.data,
+    mockOctokit.repos.listReleases.mockImplementation(() => ({
+      data: [latestReleases.data],
     }));
   });
 
@@ -47,7 +47,7 @@ describe('Synchronize action distribution.', () => {
     });
 
     await handle();
-    expect(mockOctokit.repos.getLatestRelease).toBeCalledTimes(1);
+    expect(mockOctokit.repos.listReleases).toBeCalledTimes(1);
     expect(mockS3.getObjectTagging).toBeCalledWith({
       Bucket: bucketName,
       Key: bucketObjectKey,
@@ -65,7 +65,7 @@ describe('Synchronize action distribution.', () => {
     });
 
     await handle();
-    expect(mockOctokit.repos.getLatestRelease).toBeCalledTimes(1);
+    expect(mockOctokit.repos.listReleases).toBeCalledTimes(1);
     expect(mockS3.getObjectTagging).toBeCalledWith({
       Bucket: bucketName,
       Key: bucketObjectKey,
@@ -83,7 +83,7 @@ describe('Synchronize action distribution.', () => {
     });
 
     await handle();
-    expect(mockOctokit.repos.getLatestRelease).toBeCalledTimes(1);
+    expect(mockOctokit.repos.listReleases).toBeCalledTimes(1);
     expect(mockS3.getObjectTagging).toBeCalledWith({
       Bucket: bucketName,
       Key: bucketObjectKey,
@@ -101,7 +101,7 @@ describe('Synchronize action distribution.', () => {
     });
 
     await handle();
-    expect(mockOctokit.repos.getLatestRelease).toBeCalledTimes(1);
+    expect(mockOctokit.repos.listReleases).toBeCalledTimes(1);
     expect(mockS3.getObjectTagging).toBeCalledWith({
       Bucket: bucketName,
       Key: bucketObjectKey,
@@ -118,16 +118,16 @@ describe('No release assets found.', () => {
   });
 
   it('Empty list of assets.', async () => {
-    mockOctokit.repos.getLatestRelease.mockImplementation(() => ({
-      data: latestReleasesEmpty.data,
+    mockOctokit.repos.listReleases.mockImplementation(() => ({
+      data: [latestReleasesEmpty.data],
     }));
 
     await expect(handle()).rejects.toThrow(errorMessage);
   });
 
   it('No linux x64 asset.', async () => {
-    mockOctokit.repos.getLatestRelease.mockImplementation(() => ({
-      data: latestReleasesNoLinux.data,
+    mockOctokit.repos.listReleases.mockImplementation(() => ({
+      data: [latestReleasesNoLinux.data],
     }));
 
     await expect(handle()).rejects.toThrow(errorMessage);
@@ -162,8 +162,8 @@ describe('Synchronize action distribution for arm64.', () => {
  });
 
  it('No linux arm64 asset.', async () => {
-  mockOctokit.repos.getLatestRelease.mockImplementation(() => ({
-    data: latestReleasesNoArm64.data,
+  mockOctokit.repos.listReleases.mockImplementation(() => ({
+    data: [latestReleasesNoArm64.data],
   }));
 
   await expect(handle()).rejects.toThrow(errorMessage);
