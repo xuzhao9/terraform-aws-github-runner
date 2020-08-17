@@ -16,6 +16,7 @@ terraform import module.runners.module.runners.aws_cloudwatch_log_group.scale_up
 terraform import module.runners.module.runners.aws_cloudwatch_log_group.scale_down "/aws/lambda/default-scale-down"
 terraform import module.runners.module.webhook.aws_cloudwatch_log_group.webhook "/aws/lambda/default-webhook"
 ```
+- fix: Syncer will now sync the latest github actions runner pre-release, preventing any auto-updating on startup
 
 ## [0.4.0] - 2020-08-10
 
