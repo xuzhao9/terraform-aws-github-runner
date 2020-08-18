@@ -30,6 +30,16 @@ data "aws_ami" "runner" {
   owners = var.ami_owners
 }
 
+locals {
+  install_runner = templatefile("${path.module}/templates/install-runner.sh",
+    {
+      environment                     = var.environment
+      s3_location_runner_distribution = var.s3_location_runner_binaries
+      service_user                    = var.runner_as_root ? "root" : "ec2-user"
+      runner_architecture             = var.runner_architecture
+  })
+}
+
 resource "aws_launch_template" "runner" {
   name = "${var.environment}-action-runner"
 
@@ -74,12 +84,9 @@ resource "aws_launch_template" "runner" {
   }
 
   user_data = base64encode(templatefile("${path.module}/templates/user-data.sh", {
-    environment                     = var.environment
-    pre_install                     = var.userdata_pre_install
-    post_install                    = var.userdata_post_install
-    s3_location_runner_distribution = var.s3_location_runner_binaries
-    service_user                    = var.runner_as_root ? "root" : "ec2-user"
-    runner_architecture             = var.runner_architecture
+    pre_install    = var.userdata_pre_install
+    install_runner = local.install_runner
+    post_install   = var.userdata_post_install
   }))
 
   tags = local.tags

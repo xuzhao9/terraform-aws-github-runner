@@ -21,3 +21,9 @@ output "lambda_scale_down" {
 output "role_scale_down" {
   value = aws_iam_role.scale_down
 }
+
+output "user_data_parts" {
+  value = {
+    install_runner = local.install_runner
+  }
+}

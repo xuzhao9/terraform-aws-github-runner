@@ -8,6 +8,7 @@ output "runners" {
     role_runner             = module.runners.role_runner
     role_scale_up           = module.runners.role_scale_up
     role_scale_down         = module.runners.role_scale_down
+    user_data_parts         = module.runners.user_data_parts
   }
 }
 

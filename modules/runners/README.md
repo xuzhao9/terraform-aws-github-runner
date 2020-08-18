@@ -106,6 +106,7 @@ No requirements.
 | role\_runner | n/a |
 | role\_scale\_down | n/a |
 | role\_scale\_up | n/a |
+| user\_data\_parts | n/a |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
