@@ -18,7 +18,7 @@ terraform import module.runners.module.runners.aws_cloudwatch_log_group.scale_do
 terraform import module.runners.module.webhook.aws_cloudwatch_log_group.webhook "/aws/lambda/default-webhook"
 ```
 
-- feat: Added option to binaries syncer to upgrade to prereleases, preventing any auto-updating on startup. Option `runner_allow_prerelease_binaries` is disabled by default.
+- feat: Added option to binaries syncer to upgrade to prereleases, preventing any auto-updating on startup. Option `runner_allow_prerelease_binaries` is disabled by default. (#141, #165) @sjagoe
 
 ## [0.4.0] - 2020-08-10
 
