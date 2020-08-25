@@ -701,10 +701,10 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.3.tgz#c893b73721db73699943bfc3653b1deb7faa4a3a"
   integrity sha512-Jus9s4CDbqwocc5pOAnh8ShfrnMcPHuJYzVcSUU7lrh8Ni5HuIqX3oilL86p3dlTrk0LzHRCgA/GQ7uNCw6l2Q==
 
-"@types/node@*", "@types/node@>= 8", "@types/node@^14.0.27":
-  version "14.0.27"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.27.tgz#a151873af5a5e851b51b3b065c9e63390a9e0eb1"
-  integrity sha512-kVrqXhbclHNHGu9ztnAwSncIgJv/FaxmzXJvGXNdcCpV1b8u1/Mi6z6m0vwy0LzKeXFTPLH0NzwmoJ3fNCIq0g==
+"@types/node@*", "@types/node@>= 8", "@types/node@^14.6.0":
+  version "14.6.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.6.0.tgz#7d4411bf5157339337d7cff864d9ff45f177b499"
+  integrity sha512-mikldZQitV94akrc4sCcSjtJfsTKt4p+e/s0AGscVA6XArQ9kFclP+ZiYUMnq987rc6QlYxXv/EivqlfSLxpKA==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -926,10 +926,10 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk@^2.734.0:
-  version "2.734.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.734.0.tgz#522370a95e70d6df44d94677bc01fe3b3522da3c"
-  integrity sha512-F5SrcOm6WyaN5j+pybx97vfSCa0SIz/kukJNSeDzMdk5q0xsKUjtUzL/kc0QwtCspCni0WTNmBKiD+firP5JKQ==
+aws-sdk@^2.739.0:
+  version "2.739.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.739.0.tgz#10b0b29be18c3f0f85ca145cbed8b10793ddc7a7"
+  integrity sha512-N2XyxY12gs0GJc26O8TmdT30ovEKWsPX787CNW24g0cXTCyc/Teltq0re6yGxfaH0VmN6qONNLr3E59JtJ3neA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -4039,10 +4039,10 @@ ts-jest@^25.4.0:
     semver "6.x"
     yargs-parser "18.x"
 
-ts-node-dev@^1.0.0-pre.57:
-  version "1.0.0-pre.57"
-  resolved "https://registry.yarnpkg.com/ts-node-dev/-/ts-node-dev-1.0.0-pre.57.tgz#7ed94caccbb9cf0bd9d10a782d8c8f90dcbefc36"
-  integrity sha512-xxk1d1jAK5hXumW7HtsbWZja1wBte3sy+avZY/mK2RAvD22ezlJI9H4EXicDxiW3rkBO/YqTfS0L+K3HwucA9A==
+ts-node-dev@^1.0.0-pre.60:
+  version "1.0.0-pre.60"
+  resolved "https://registry.yarnpkg.com/ts-node-dev/-/ts-node-dev-1.0.0-pre.60.tgz#428b051264d9b2b3e58a8a4a02a5d36692436e20"
+  integrity sha512-S1X/2dMH2cxzFEiOWo5r/DTD0oElKbEpG8lnWoEA1LrwxXMFCJs71vIMaXPu6p8ud3MHMI2Ans3syDQ8mkjEUg==
   dependencies:
     chokidar "^3.4.0"
     dateformat "~1.0.4-1.2.3"
