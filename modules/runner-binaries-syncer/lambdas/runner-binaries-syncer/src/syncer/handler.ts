@@ -31,7 +31,10 @@ interface ReleaseAsset {
   downloadUrl: string;
 }
 
-async function getLinuxReleaseAsset(runnerArch = 'x64'): Promise<ReleaseAsset | undefined> {
+async function getLinuxReleaseAsset(
+  runnerArch = 'x64',
+  fetchPrereleaseBinaries = false,
+): Promise<ReleaseAsset | undefined> {
   const githubClient = new Octokit();
   const assetsList = await githubClient.repos.listReleases({
     owner: 'actions',
@@ -40,8 +43,20 @@ async function getLinuxReleaseAsset(runnerArch = 'x64'): Promise<ReleaseAsset | 
   if (assetsList.data?.length === 0) {
     return undefined;
   }
-  const assets = assetsList.data[0];
-  const linuxAssets = assets.assets?.filter((a) => a.name?.includes(`actions-runner-linux-${runnerArch}-`));
+
+  const latestPrereleaseIndex = assetsList.data.findIndex((a) => a.prerelease === true);
+  const latestReleaseIndex = assetsList.data.findIndex((a) => a.prerelease === false);
+
+  let asset = undefined;
+  if (fetchPrereleaseBinaries && latestPrereleaseIndex < latestReleaseIndex) {
+    asset = assetsList.data[latestPrereleaseIndex];
+  } else if (latestReleaseIndex != -1) {
+    asset = assetsList.data[latestReleaseIndex];
+  }
+  if (!asset) {
+    return undefined;
+  }
+  const linuxAssets = asset.assets?.filter((a) => a.name?.includes(`actions-runner-linux-${runnerArch}-`));
 
   return linuxAssets?.length === 1
     ? { name: linuxAssets[0].name, downloadUrl: linuxAssets[0].browser_download_url }
@@ -74,10 +89,18 @@ async function uploadToS3(s3: S3, cacheObject: CacheObject, actionRunnerReleaseA
   });
 }
 
+function stringToBoolean(s: string): boolean {
+  const re = new RegExp(/^(true|1|on)$/i);
+  return re.test(s.trim());
+}
+
 export const handle = async (): Promise<void> => {
   const s3 = new AWS.S3();
 
-  const runnerArch = process.env.GITHUB_RUNNER_ARCHITECTURE || 'x64'
+  const runnerArch = process.env.GITHUB_RUNNER_ARCHITECTURE || 'x64';
+  const fetchPrereleaseBinaries = process.env.GITHUB_RUNNER_ALLOW_PRERELEASE_BINARIES
+    ? stringToBoolean(process.env.GITHUB_RUNNER_ALLOW_PRERELEASE_BINARIES as string)
+    : false;
 
   const cacheObject: CacheObject = {
     bucket: process.env.S3_BUCKET_NAME as string,
@@ -87,7 +110,7 @@ export const handle = async (): Promise<void> => {
     throw Error('Please check all mandatory variables are set.');
   }
 
-  const actionRunnerReleaseAsset = await getLinuxReleaseAsset(runnerArch);
+  const actionRunnerReleaseAsset = await getLinuxReleaseAsset(runnerArch, fetchPrereleaseBinaries);
   if (actionRunnerReleaseAsset === undefined) {
     throw Error('Cannot find GitHub release asset.');
   }
