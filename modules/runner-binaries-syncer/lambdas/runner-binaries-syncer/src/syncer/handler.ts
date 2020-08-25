@@ -3,6 +3,7 @@ import { PassThrough } from 'stream';
 import request from 'request';
 import { S3 } from 'aws-sdk';
 import AWS from 'aws-sdk';
+import yn from 'yn';
 
 const versionKey = 'name';
 
@@ -52,8 +53,7 @@ async function getLinuxReleaseAsset(
     asset = assetsList.data[latestPrereleaseIndex];
   } else if (latestReleaseIndex != -1) {
     asset = assetsList.data[latestReleaseIndex];
-  }
-  if (!asset) {
+  } else {
     return undefined;
   }
   const linuxAssets = asset.assets?.filter((a) => a.name?.includes(`actions-runner-linux-${runnerArch}-`));
@@ -89,18 +89,11 @@ async function uploadToS3(s3: S3, cacheObject: CacheObject, actionRunnerReleaseA
   });
 }
 
-function stringToBoolean(s: string): boolean {
-  const re = new RegExp(/^(true|1|on)$/i);
-  return re.test(s.trim());
-}
-
 export const handle = async (): Promise<void> => {
   const s3 = new AWS.S3();
 
   const runnerArch = process.env.GITHUB_RUNNER_ARCHITECTURE || 'x64';
-  const fetchPrereleaseBinaries = process.env.GITHUB_RUNNER_ALLOW_PRERELEASE_BINARIES
-    ? stringToBoolean(process.env.GITHUB_RUNNER_ALLOW_PRERELEASE_BINARIES as string)
-    : false;
+  const fetchPrereleaseBinaries = yn(process.env.GITHUB_RUNNER_ALLOW_PRERELEASE_BINARIES, { default: false });
 
   const cacheObject: CacheObject = {
     bucket: process.env.S3_BUCKET_NAME as string,
