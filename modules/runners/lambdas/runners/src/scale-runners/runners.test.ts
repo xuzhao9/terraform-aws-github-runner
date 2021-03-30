@@ -138,7 +138,7 @@ describe('create runner', () => {
       runnerType: {
         instance_type: 'c5.2xlarge',
         os: 'linux',
-        ami: 'ami-123',
+        ami_filter: 'ami-123',
         max_available: 200,
         min_available: 10,
         disk_size: 100,
@@ -171,7 +171,7 @@ describe('create runner', () => {
       runnerType: {
         instance_type: 'c5.2xlarge',
         os: 'linux',
-        ami: 'ami-123',
+        ami_filter: 'ami-123',
         max_available: 200,
         min_available: 10,
         disk_size: 100,
@@ -204,7 +204,7 @@ describe('create runner', () => {
       runnerType: {
         instance_type: 'c5.2xlarge',
         os: 'linux',
-        ami: 'ami-123',
+        ami_filter: 'ami-123',
         max_available: 200,
         min_available: 10,
         disk_size: 100,
@@ -230,7 +230,7 @@ describe('create runner', () => {
       runnerType: {
         instance_type: 'c5.2xlarge',
         os: 'linux',
-        ami: 'ami-123',
+        ami_filter: 'ami-123',
         max_available: 200,
         min_available: 10,
         disk_size: 100,
