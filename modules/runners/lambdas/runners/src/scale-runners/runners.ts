@@ -190,9 +190,7 @@ export interface Repo {
 }
 
 export function getRepo(org: string | undefined, repo: string | undefined, orgLevel: boolean): Repo {
-  return orgLevel
-    ? { repoOwner: org as string, repoName: '' }
-    : { repoOwner: repo?.split('/')[0] as string, repoName: repo?.split('/')[1] as string };
+  return { repoOwner: org as string, repoName: orgLevel ? '' : repo as string}
 }
 
 export function createGitHubClientForRunnerFactory(): (org: string | undefined, repo: string | undefined, orgLevel: boolean) => Promise<Octokit> {
