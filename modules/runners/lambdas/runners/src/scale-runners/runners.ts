@@ -19,11 +19,52 @@ export interface ListRunnerFilters {
 export interface RunnerType {
   instance_type: string,
   os: string,
-  ami: string,
+  ami_filter: string,
   max_available: number,
   min_available: number,
   disk_size: number,
   runnerTypeName: string,
+}
+
+export async function findAmiID(filter: string, owners: string = "amazon"): Promise<string> {
+  const ec2 = new EC2();
+  const filters = [
+    { Name: "name", Values: [filter] },
+    { Name: "state", Values: ["available"] }
+  ]
+  let imageID = "";
+  ec2.describeImages({Owners: [owners], Filters: filters}, function(err, data) {
+    if (err) {
+      console.log(err, err.stack)
+    } else {
+      if (data.Images?.length === 0) {
+        console.error(`No availabe images found for filter '${filter}'`);
+      }
+      sortByCreationDate(data);
+      imageID = data.Images?.shift()?.ImageId as string;
+    }
+  })
+  return imageID;
+}
+
+// Shamelessly stolen from https://ajahne.github.io/blog/javascript/aws/2019/05/15/getting-an-ami-id-nodejs.html
+function sortByCreationDate(data: EC2.DescribeImagesResult): void {
+  const images = data.Images as EC2.ImageList;
+  images.sort(function(a: EC2.Image,b: EC2.Image) {
+    const dateA: string = a['CreationDate'] as string;
+    const dateB: string = b['CreationDate'] as string;
+    if (dateA < dateB) {
+      return -1;
+    }
+    if (dateA > dateB) {
+      return 1;
+    }
+    // dates are equal
+    return 0;
+  });
+
+  // arrange the images by date in descending order
+  images.reverse();
 }
 
 export async function listRunners(filters: ListRunnerFilters | undefined = undefined): Promise<RunnerInfo[]> {
@@ -91,10 +132,12 @@ export async function createRunner(runnerParameters: RunnerInputParameters): Pro
   const randomSubnet = subnets[Math.floor(Math.random() * subnets.length)];
   console.debug('Runner configuration: ' + JSON.stringify(runnerParameters));
   const ec2 = new EC2();
+  const imageID = findAmiID(runnerParameters.runnerType.ami_filter);
   const runInstancesResponse = await ec2
     .runInstances({
       MaxCount: 1,
       MinCount: 1,
+      ImageId: await imageID,
       LaunchTemplate: {
         LaunchTemplateName: runnerParameters.runnerType.os === "linux" ? launchTemplateNameLinux : launchTemplateNameWindows,
         Version: runnerParameters.runnerType.os === "linux" ? launchTemplateVersionLinux : launchTemplateVersionWindows,

@@ -72,41 +72,41 @@ export const scaleUp = async (eventSource: string, payload: ActionRequestMessage
 
     // const runnerTypes = GetRunnerTypes();
     const runnerTypes: Dictionary<RunnerType> = {
-      linuxCpu: {
-        instance_type: 'c5.2xlarge',
+      "linux.2xlarge": {
+        instance_type: "c5.2xlarge",
         os: 'linux',
-        ami: 'ami-123',
+        ami_filter: "amzn2-ami-hvm-2.0*x86_64-ebs",
         max_available: 200,
         min_available: 10,
         disk_size: 100,
-        runnerTypeName: 'linuxCpu',
+        runnerTypeName: "linux.2xlarge",
       },
-      linuxGpu: {
-        instance_type: 'c5.2xlarge',
+      "linux.8xlarge.nvidia.gpu": {
+        instance_type: "g3.8xlarge",
         os: 'linux',
-        ami: 'ami-123',
-        max_available: 200,
-        min_available: 10,
+        ami_filter: "amzn2-ami*gpu*-2.0*x86_64-ebs",
+        max_available: 50,
+        min_available: 1,
         disk_size: 100,
-        runnerTypeName: 'linuxGpu',
+        runnerTypeName: "linux.8xlarge.nvidia.gpu",
       },
-      windowsCpu: {
+      "win.2xlarge": {
         instance_type: 'c5.2xlarge',
         os: 'windows',
-        ami: 'ami-123',
-        max_available: 200,
+        ami_filter: 'Windows_Server-2019-English-Core*',
+        max_available: 50,
         min_available: 10,
         disk_size: 100,
-        runnerTypeName: 'windowsCpu',
+        runnerTypeName: "win.2xlarge",
       },
-      windowsGpu: {
-        instance_type: 'c5.2xlarge',
+      "win.8xlarge.nvidia.gpu": {
+        instance_type: "g3.8xlarge",
         os: 'windows',
-        ami: 'ami-123',
-        max_available: 200,
+        ami_filter: 'Windows_Server-2019-English-Tesla*',
+        max_available: 30,
         min_available: 10,
         disk_size: 100,
-        runnerTypeName: 'windowsGpu',
+        runnerTypeName: "win.8xlarge.nvidia.gpu",
       },
     }
 
@@ -149,7 +149,7 @@ export const scaleUp = async (eventSource: string, payload: ActionRequestMessage
 async function allRunnersBusy(runnerType: string, org: string, repo: string, enableOrgLevel: boolean): Promise<boolean> {
   const createGitHubClientForRunner = createGitHubClientForRunnerFactory();
   const listGithubRunners = listGithubRunnersFactory();
-  
+
   const githubAppClient = await createGitHubClientForRunner(org, repo, enableOrgLevel);
   const ghRunners = await listGithubRunners(githubAppClient, org, repo, enableOrgLevel);
 
