@@ -79,17 +79,15 @@ export const scaleUp = async (eventSource: string, payload: ActionRequestMessage
         min_available: 10,
         disk_size: 100,
         runnerTypeName: "linux.2xlarge",
-        use_spot: true,
       },
       "linux.8xlarge.nvidia.gpu": {
         instance_type: "g3.8xlarge",
         os: 'linux',
-        ami_filter: "amzn2-ami*gpu*-2.0*x86_64-ebs",
+        ami_filter: "amzn2-ami-hvm-2.0*x86_64-ebs",
         max_available: 50,
         min_available: 1,
         disk_size: 100,
         runnerTypeName: "linux.8xlarge.nvidia.gpu",
-        use_spot: false,
       },
       "win.2xlarge": {
         instance_type: 'c5.2xlarge',
@@ -99,17 +97,15 @@ export const scaleUp = async (eventSource: string, payload: ActionRequestMessage
         min_available: 10,
         disk_size: 100,
         runnerTypeName: "win.2xlarge",
-        use_spot: true,
       },
       "win.8xlarge.nvidia.gpu": {
         instance_type: "g3.8xlarge",
         os: 'windows',
-        ami_filter: 'Windows_Server-2019-English-Tesla*',
+        ami_filter: 'Windows_Server-2019-English-Core*',
         max_available: 30,
         min_available: 10,
         disk_size: 100,
         runnerTypeName: "win.8xlarge.nvidia.gpu",
-        use_spot: false,
       },
     }
 

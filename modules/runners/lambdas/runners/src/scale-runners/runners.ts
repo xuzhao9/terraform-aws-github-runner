@@ -20,7 +20,6 @@ export interface RunnerType {
   instance_type: string,
   os: string,
   ami_filter: string,
-  use_spot: boolean,
   max_available: number,
   min_available: number,
   disk_size: number,
@@ -190,6 +189,9 @@ export function getRepo(org: string | undefined, repo: string | undefined, orgLe
   return { repoOwner: org as string, repoName: orgLevel ? '' : repo as string}
 }
 
+// scale-down
+// createGitHubClientForRunner("", "seemethere/test-repo", false) // orgLevel false
+// createGitHubClientForRunner("seemethere", "" , true) // orgLevel true
 export function createGitHubClientForRunnerFactory(): (org: string | undefined, repo: string | undefined, orgLevel: boolean) => Promise<Octokit> {
   const cache: Map<string, Octokit> = new Map();
 

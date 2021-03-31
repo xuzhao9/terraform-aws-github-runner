@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import moment from 'moment';
 import yn from 'yn';
-import { listRunners, RunnerInfo, terminateRunner, Repo, createGitHubClientForRunnerFactory, listGithubRunnersFactory, getRepo } from './runners';
+import { listRunners, RunnerInfo, terminateRunner, Repo, createGitHubClientForRunnerFactory, listGithubRunnersFactory } from './runners';
 import { getIdleRunnerCount, ScalingDownConfig } from './scale-down-config';
 
 function runnerMinimumTimeExceeded(runner: RunnerInfo, minimumRunningTimeInMinutes: string): boolean {
@@ -36,6 +36,12 @@ async function removeRunner(
   } catch (e) {
     console.debug(`Runner '${ec2runner.instanceId}' cannot be de-registered, most likely the runner is active.`);
   }
+}
+
+function getRepo(org: string | undefined, repo: string | undefined, orgLevel: boolean): Repo {
+    return orgLevel
+    ? { repoOwner: org as string, repoName: '' }
+    : { repoOwner: repo?.split('/')[0] as string, repoName: repo?.split('/')[1] as string };
 }
 
 export async function scaleDown(): Promise<void> {
