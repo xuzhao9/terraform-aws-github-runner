@@ -57,9 +57,9 @@ resource "aws_launch_template" "linux_runner" {
 
   instance_initiated_shutdown_behavior = "terminate"
 
-  instance_market_options {
-    market_type = var.market_options
-  }
+  /* instance_market_options { */
+  /*   market_type = var.market_options */
+  /* } */
 
   image_id      = data.aws_ami.runner_ami_linux.id
   instance_type = var.instance_type
@@ -128,9 +128,9 @@ resource "aws_launch_template" "windows_runner" {
 
   instance_initiated_shutdown_behavior = "terminate"
 
-  instance_market_options {
-    market_type = var.market_options
-  }
+  /* instance_market_options { */
+  /*   market_type = var.market_options */
+  /* } */
 
   image_id      = data.aws_ami.runner_ami_windows.id
   instance_type = var.instance_type

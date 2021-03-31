@@ -20,6 +20,7 @@ export interface RunnerType {
   instance_type: string,
   os: string,
   ami_filter: string,
+  use_spot: boolean,
   max_available: number,
   min_available: number,
   disk_size: number,
@@ -32,25 +33,15 @@ export async function findAmiID(filter: string, owners: string = "amazon"): Prom
     { Name: "name", Values: [filter] },
     { Name: "state", Values: ["available"] }
   ]
-  ec2.describeImages({Owners: [owners], Filters: filters}, function(err, data) {
-    if (err) {
-      console.log(err, err.stack)
-    } else {
-      if (data.Images?.length === 0) {
-        console.error(`No available images found for filter '${filter}'`);
-      }
-      sortByCreationDate(data);
-      console.debug({findAmiID: "findAmiID", data});
-      const latestImage = data.Images?.shift();
-      console.debug(latestImage?.ImageId);
-      return latestImage?.ImageId as string;
-    }
-  })
-  return "";
+  const describeImagesResponse = await ec2.describeImages({Owners: [owners], Filters: filters}).promise();
+  await sortByCreationDate(describeImagesResponse)
+  const latestImage = describeImagesResponse.Images?.shift();
+  console.info("findAmiID", {filter: filter, latestImage: latestImage});
+  return latestImage?.ImageId as string
 }
 
 // Shamelessly stolen from https://ajahne.github.io/blog/javascript/aws/2019/05/15/getting-an-ami-id-nodejs.html
-function sortByCreationDate(data: EC2.DescribeImagesResult): void {
+async function sortByCreationDate(data: EC2.DescribeImagesResult): Promise<void> {
   const images = data.Images as EC2.ImageList;
   images.sort(function(a: EC2.Image,b: EC2.Image) {
     const dateA: string = a['CreationDate'] as string;
