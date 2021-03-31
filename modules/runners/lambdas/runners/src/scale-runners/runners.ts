@@ -32,19 +32,21 @@ export async function findAmiID(filter: string, owners: string = "amazon"): Prom
     { Name: "name", Values: [filter] },
     { Name: "state", Values: ["available"] }
   ]
-  let imageID = "";
   ec2.describeImages({Owners: [owners], Filters: filters}, function(err, data) {
     if (err) {
       console.log(err, err.stack)
     } else {
       if (data.Images?.length === 0) {
-        console.error(`No availabe images found for filter '${filter}'`);
+        console.error(`No available images found for filter '${filter}'`);
       }
       sortByCreationDate(data);
-      imageID = data.Images?.shift()?.ImageId as string;
+      console.debug({findAmiID: "findAmiID", data});
+      const latestImage = data.Images?.shift();
+      console.debug(latestImage?.ImageId);
+      return latestImage?.ImageId as string;
     }
   })
-  return imageID;
+  return "";
 }
 
 // Shamelessly stolen from https://ajahne.github.io/blog/javascript/aws/2019/05/15/getting-an-ami-id-nodejs.html
@@ -132,12 +134,16 @@ export async function createRunner(runnerParameters: RunnerInputParameters): Pro
   const randomSubnet = subnets[Math.floor(Math.random() * subnets.length)];
   console.debug('Runner configuration: ' + JSON.stringify(runnerParameters));
   const ec2 = new EC2();
-  const imageID = findAmiID(runnerParameters.runnerType.ami_filter);
+  const imageID = await findAmiID(runnerParameters.runnerType.ami_filter);
+  if (imageID === "") {
+    console.error(`Could not find a matching AMI for filter ${runnerParameters.runnerType.ami_filter}`)
+    return
+  }
   const runInstancesResponse = await ec2
     .runInstances({
       MaxCount: 1,
       MinCount: 1,
-      ImageId: await imageID,
+      ImageId: imageID,
       LaunchTemplate: {
         LaunchTemplateName: runnerParameters.runnerType.os === "linux" ? launchTemplateNameLinux : launchTemplateNameWindows,
         Version: runnerParameters.runnerType.os === "linux" ? launchTemplateVersionLinux : launchTemplateVersionWindows,
