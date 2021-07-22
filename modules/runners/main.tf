@@ -77,6 +77,10 @@ resource "aws_launch_template" "linux_runner" {
     )
   }
 
+  network_interfaces {
+    associate_public_ip_address = true
+  }
+
   tag_specifications {
     resource_type = "volume"
     tags = merge(
@@ -154,6 +158,9 @@ resource "aws_launch_template" "windows_runner" {
     )
   }
 
+  network_interfaces {
+    associate_public_ip_address = true
+  }
 
   user_data = base64encode(templatefile(local.userdata_template_windows, {
     environment                     = var.environment
