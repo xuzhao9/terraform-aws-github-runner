@@ -15,10 +15,9 @@ resource "random_string" "random" {
 }
 
 resource "aws_sqs_queue" "queued_builds" {
-  name                        = "${var.environment}-queued-builds.fifo"
-  visibility_timeout_seconds  = var.runners_scale_up_lambda_timeout
-  fifo_queue                  = true
-  content_based_deduplication = true
+  name                       = "${var.environment}-queued-builds.fifo"
+  visibility_timeout_seconds = var.runners_scale_up_lambda_timeout
+  fifo_queue                 = true
 
   tags = var.tags
 }
