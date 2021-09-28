@@ -1,10 +1,4 @@
-import {
-  listRunners,
-  createRunner,
-  RunnerType,
-  createGitHubClientForRunnerFactory,
-  listGithubRunnersFactory,
-} from './runners';
+import { listRunners, createRunner, RunnerType, createGitHubClientForRunnerFactory } from './runners';
 import { createOctoClient, createGithubAuth } from './gh-auth';
 import LRU from 'lru-cache';
 import YAML from 'yaml';
@@ -51,17 +45,7 @@ export const scaleUp = async (eventSource: string, payload: ActionRequestMessage
   const repoName = enableOrgLevel ? undefined : `${payload.repositoryOwner}/${payload.repositoryName}`;
   const orgName = enableOrgLevel ? payload.repositoryOwner : undefined;
 
-  const currentRunners = await listRunners({
-    environment: environment,
-    repoName: repoName,
-  });
-  console.info(
-    `${
-      enableOrgLevel
-        ? `Organization ${payload.repositoryOwner}`
-        : `Repo ${payload.repositoryOwner}/${payload.repositoryName}`
-    } has ${currentRunners.length} runners`,
-  );
+  console.info(`[scaleUp] Recieved event: ${JSON.stringify(payload)}`);
 
   const runnerTypes = await GetRunnerTypes(
     payload.repositoryOwner,
@@ -75,82 +59,43 @@ export const scaleUp = async (eventSource: string, payload: ActionRequestMessage
     const runnerType = runnerTypes.get(runnerLabel);
     if (runnerType === undefined) {
       console.info(
-        `Runner label '${runnerType}' was not found in config for ${payload.repositoryOwner}/${
+        `[scaleUp] Runner label '${runnerLabel}' was not found in config for ${payload.repositoryOwner}/${
           payload.repositoryName
-        }, see: ${JSON.stringify(runnerTypes)}`,
+        }, see: ${Array.from(runnerTypes.keys())}`,
       );
       continue;
     }
     try {
-      const currentRunnerCount = currentRunners.filter((x) => x.runnerType === runnerType.runnerTypeName).length;
-      if (currentRunnerCount < runnerType.max_available) {
-        // check if all runners are busy
-        if (
-          await allRunnersBusy(
-            runnerType.runnerTypeName,
-            payload.repositoryOwner,
-            `${payload.repositoryOwner}/${payload.repositoryName}`,
-            enableOrgLevel,
-          )
-        ) {
-          // create token
-          const registrationToken = enableOrgLevel
-            ? await githubInstallationClient.actions.createRegistrationTokenForOrg({ org: payload.repositoryOwner })
-            : await githubInstallationClient.actions.createRegistrationTokenForRepo({
-                owner: payload.repositoryOwner,
-                repo: payload.repositoryName,
-              });
-          const token = registrationToken.data.token;
-
-          const labelsArgument =
-            runnerExtraLabels !== undefined
-              ? `--labels ${runnerType.runnerTypeName},${runnerExtraLabels}`
-              : `--labels ${runnerType.runnerTypeName}`;
-          const runnerGroupArgument = runnerGroup !== undefined ? ` --runnergroup ${runnerGroup}` : '';
-          const configBaseUrl = 'https://github.com';
-          await createRunner({
-            environment: environment,
-            runnerConfig: enableOrgLevel
-              ? `--url ${configBaseUrl}/${payload.repositoryOwner} --token ${token} ${labelsArgument}${runnerGroupArgument}`
-              : `--url ${configBaseUrl}/${payload.repositoryOwner}/${payload.repositoryName} ` +
-                `--token ${token} ${labelsArgument}`,
-            orgName: orgName,
-            repoName: repoName,
-            runnerType: runnerType,
+      // create token
+      const registrationToken = enableOrgLevel
+        ? await githubInstallationClient.actions.createRegistrationTokenForOrg({ org: payload.repositoryOwner })
+        : await githubInstallationClient.actions.createRegistrationTokenForRepo({
+            owner: payload.repositoryOwner,
+            repo: payload.repositoryName,
           });
-        } else {
-          console.info('There are available runners, no new runners will be created');
-        }
-      } else {
-        console.info('No runner will be created, maximum number of runners reached.');
-      }
+      const token = registrationToken.data.token;
+
+      const labelsArgument =
+        runnerExtraLabels !== undefined
+          ? `--labels ${runnerType.runnerTypeName},${runnerExtraLabels}`
+          : `--labels ${runnerType.runnerTypeName}`;
+      const runnerGroupArgument = runnerGroup !== undefined ? ` --runnergroup ${runnerGroup}` : '';
+      const configBaseUrl = 'https://github.com';
+      await createRunner({
+        environment: environment,
+        runnerConfig: enableOrgLevel
+          ? `--url ${configBaseUrl}/${payload.repositoryOwner} --token ${token} ${labelsArgument}${runnerGroupArgument}`
+          : `--url ${configBaseUrl}/${payload.repositoryOwner}/${payload.repositoryName} ` +
+            `--token ${token} ${labelsArgument}`,
+        orgName: orgName,
+        repoName: repoName,
+        runnerType: runnerType,
+      });
     } catch (e) {
-      console.error(`Error spinning up instance of type ${runnerType.runnerTypeName}: ${e}`);
+      console.error(`[scaleUp] Error spinning up instance of type ${runnerType.runnerTypeName}: ${e}`);
     }
   }
 };
-
-async function allRunnersBusy(
-  runnerType: string,
-  org: string,
-  repo: string,
-  enableOrgLevel: boolean,
-): Promise<boolean> {
-  const createGitHubClientForRunner = createGitHubClientForRunnerFactory();
-  const listGithubRunners = listGithubRunnersFactory();
-
-  const githubAppClient = await createGitHubClientForRunner(org, repo, enableOrgLevel);
-  const ghRunners = await listGithubRunners(githubAppClient, org, repo, enableOrgLevel);
-
-  const runnersWithLabel = ghRunners.filter(
-    (x) => x.labels.some((y) => y.name === runnerType) && x.status.toLowerCase() !== 'offline',
-  );
-  const busyCount = ghRunners.filter((x) => x.busy).length;
-
-  console.info(`Found matching GitHub runners [${runnerType}], ${busyCount}/${runnersWithLabel.length} are busy`);
-
-  return runnersWithLabel.every((x) => x.busy);
-}
 
 const runnerTypeCache = new LRU();
 
