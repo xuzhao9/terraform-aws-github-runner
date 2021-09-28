@@ -30,7 +30,7 @@ const TEST_DATA: ActionRequestMessage = {
   repositoryName: 'hello-world',
   repositoryOwner: 'Codertocat',
   installationId: 2,
-  runnerLabels: ["linux.2xlarge"]
+  runnerLabels: ['linux.2xlarge'],
 };
 
 const TEST_DATA_WITHOUT_INSTALL_ID: ActionRequestMessage = {
@@ -39,7 +39,7 @@ const TEST_DATA_WITHOUT_INSTALL_ID: ActionRequestMessage = {
   repositoryName: 'hello-world',
   repositoryOwner: 'Codertocat',
   installationId: 0,
-  runnerLabels: ["linux.2xlarge"]
+  runnerLabels: ['linux.2xlarge'],
 };
 
 const cleanEnv = process.env;
