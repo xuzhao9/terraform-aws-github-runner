@@ -1,7 +1,7 @@
 cd /home/$USER_NAME
 mkdir actions-runner && cd actions-runner
 
-aws s3 cp ${s3_location_runner_distribution} actions-runner.tar.gz
+aws s3 cp "actions-runner-linux-$(uname -p).tar.gz" actions-runner.tar.gz
 tar xzf ./actions-runner.tar.gz
 rm -rf actions-runner.tar.gz
 

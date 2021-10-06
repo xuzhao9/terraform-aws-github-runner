@@ -97,7 +97,12 @@ export const handle = async (): Promise<void> => {
     {
       runnerOS: 'linux',
       runnerArch: 'x64',
-      s3Key: process.env.S3_OBJECT_KEY_LINUX,
+      s3Key: 'actions-runner-linux-x86_x64.tar.gz',
+    },
+    {
+      runnerOS: 'linux',
+      runnerArch: 'arm64',
+      s3Key: 'actions-runner-linux-aarch64.tar.gz',
     },
     {
       runnerOS: 'win',

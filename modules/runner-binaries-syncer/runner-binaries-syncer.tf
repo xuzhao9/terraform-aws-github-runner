@@ -74,8 +74,8 @@ resource "aws_iam_role_policy" "syncer" {
   role = aws_iam_role.syncer_lambda.id
 
   policy = templatefile("${path.module}/policies/lambda-syncer.json", {
-    s3_resource_arn_linux   = "${aws_s3_bucket.action_dist.arn}/${local.action_runner_distribution_object_key_linux}"
-    s3_resource_arn_windows = "${aws_s3_bucket.action_dist.arn}/${local.action_runner_distribution_object_key_windows}"
+    s3_resource_arn_linux   = "${aws_s3_bucket.action_dist.arn}/*.tar.gz"
+    s3_resource_arn_windows = "${aws_s3_bucket.action_dist.arn}/*.zip"
   })
 }
 
