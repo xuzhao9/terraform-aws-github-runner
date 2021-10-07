@@ -31,7 +31,6 @@ resource "aws_lambda_function" "webhook" {
   s3_key            = var.webhook_lambda_s3_key != null ? var.webhook_lambda_s3_key : null
   s3_object_version = var.webhook_lambda_s3_object_version != null ? var.webhook_lambda_s3_object_version : null
   filename          = var.lambda_s3_bucket == null ? local.lambda_zip : null
-  source_code_hash  = var.lambda_s3_bucket == null ? filebase64sha256(local.lambda_zip) : null
   function_name     = "${var.environment}-webhook"
   role              = aws_iam_role.webhook_lambda.arn
   handler           = "index.githubWebhook"

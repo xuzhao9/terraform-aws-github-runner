@@ -17,7 +17,6 @@ resource "aws_lambda_function" "scale_up" {
   s3_key                         = var.runners_lambda_s3_key != null ? var.runners_lambda_s3_key : null
   s3_object_version              = var.runners_lambda_s3_object_version != null ? var.runners_lambda_s3_object_version : null
   filename                       = var.lambda_s3_bucket == null ? local.lambda_zip : null
-  source_code_hash               = var.lambda_s3_bucket == null ? filebase64sha256(local.lambda_zip) : null
   function_name                  = "${var.environment}-scale-up"
   role                           = aws_iam_role.scale_up.arn
   handler                        = "index.scaleUp"
