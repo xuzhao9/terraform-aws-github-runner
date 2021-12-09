@@ -9,7 +9,6 @@ export interface RunnerInfo {
   repo: string | undefined;
   org: string | undefined;
   runnerType: string | undefined;
-  ghRunnerId: string | undefined;
 }
 
 export interface ListRunnerFilters {
@@ -56,7 +55,6 @@ export async function listRunners(filters: ListRunnerFilters | undefined = undef
             repo: i.Tags?.find((e) => e.Key === 'Repo')?.Value,
             org: i.Tags?.find((e) => e.Key === 'Org')?.Value,
             runnerType: i.Tags?.find((e) => e.Key === 'RunnerType')?.Value,
-            ghRunnerId: i.Tags?.find((e) => e.Key === 'GithubRunnerID')?.Value,
           });
         }
       }
@@ -250,11 +248,10 @@ export async function listGithubRunners(
   enableOrgLevel: boolean,
 ): Promise<GhRunners> {
   const key: string = `${org}/${repo}`;
-  const cachedRunners = ghRunnersCache.get(key);
   // Exit out early if we have our key
-  if (cachedRunners !== undefined) {
+  if (ghRunnersCache.get(key) !== undefined) {
     console.debug(`[listGithubRunners] Cache hit for ${key}`);
-    return cachedRunners as GhRunners;
+    return ghRunnersCache.get(key) as GhRunners;
   }
   const repository = getRepo(org, repo, enableOrgLevel);
 
@@ -266,24 +263,4 @@ export async function listGithubRunners(
   });
   ghRunnersCache.set(key, runners);
   return runners;
-}
-
-export type GhRunner = UnboxPromise<ReturnType<Octokit['actions']['getSelfHostedRunnerForRepo']>>['data'];
-
-export async function getRunner(
-  client: Octokit,
-  org: string,
-  repo: string,
-  runnerID: string,
-): Promise<GhRunner | undefined> {
-  try {
-    const runner = await client.actions.getSelfHostedRunnerForRepo({
-      owner: org,
-      repo: repo,
-      runner_id: runnerID as unknown as number,
-    });
-    return runner.data;
-  } catch (e) {
-    return undefined;
-  }
 }

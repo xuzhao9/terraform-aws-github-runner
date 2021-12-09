@@ -46,7 +46,6 @@ const DEFAULT_RUNNERS = [
     repo: `${TEST_DATA.repositoryOwner}/${TEST_DATA.repositoryName}`,
     org: undefined,
     runnerType: 'linuxCpu',
-    ghRunnerId: '123',
   },
   {
     instanceId: 'i-oldest-idle-102',
@@ -56,7 +55,6 @@ const DEFAULT_RUNNERS = [
     repo: `${TEST_DATA.repositoryOwner}/${TEST_DATA.repositoryName}`,
     org: undefined,
     runnerType: 'linuxCpu',
-    ghRunnerId: '123',
   },
   {
     instanceId: 'i-running-103',
@@ -64,7 +62,6 @@ const DEFAULT_RUNNERS = [
     repo: `doe/another-repo`,
     org: undefined,
     runnerType: 'linuxCpu',
-    ghRunnerId: '123',
   },
   {
     instanceId: 'i-orphan-104',
@@ -74,7 +71,6 @@ const DEFAULT_RUNNERS = [
     repo: `doe/another-repo`,
     org: undefined,
     runnerType: 'linuxCpu',
-    ghRunnerId: '123',
   },
   {
     instanceId: 'i-not-registered-105',
@@ -84,7 +80,6 @@ const DEFAULT_RUNNERS = [
     repo: `doe/another-repo`,
     org: undefined,
     runnerType: 'linuxCpu',
-    ghRunnerId: '123',
   },
 ];
 
